@@ -28,7 +28,11 @@
     /* ===== RESET ===== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-size: 16px; }
-    body { background: var(--bg); color: var(--white); font-family: 'Lato', sans-serif; overflow-x: hidden; }
+    body {
+      background: var(--bg); color: var(--white); font-family: 'Lato', sans-serif; overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
     img  { max-width: 100%; display: block; }
     a    { color: inherit; }
     @media (prefers-reduced-motion: reduce) {
@@ -141,7 +145,20 @@
     .ls-pink   { width:550px;height:550px; background:radial-gradient(circle,rgba(255,45,149,.18) 0%,transparent 68%);  top:5%;    left:-5%;  animation:light-drift-1 9s ease-in-out infinite; }
     .ls-cyan   { width:480px;height:480px; background:radial-gradient(circle,rgba(0,240,255,.15) 0%,transparent 68%);   bottom:5%; right:-5%; animation:light-drift-2 11s ease-in-out infinite; }
     .ls-yellow { width:400px;height:400px; background:radial-gradient(circle,rgba(252,238,9,.11) 0%,transparent 65%);   top:50%;   left:45%;  animation:light-drift-3 7s ease-in-out infinite; }
-    @media (max-width:639px) { .light-spot { display:none; } }
+    @media (max-width:639px) {
+      .light-spot { display:none; }
+
+      /* En mobile el blur de 45px "derrite" el texto — reducimos a máx 12px */
+      :root {
+        --gf: 0 0 4px #FF2D95, 0 0 12px #FF2D95;
+        --gt: 0 0 4px #00F0FF, 0 0 12px #00F0FF;
+        --gy: 0 0 4px #FCEE09, 0 0 12px #FCEE09;
+        --gp: 0 0 4px #7D2CFF, 0 0 12px #7D2CFF;
+      }
+      /* Dresscode Sí/No también tiene blur hardcodeado */
+      .dc-col.yes h3 { text-shadow: 0 0 6px #00F0FF; }
+      .dc-col.no  h3 { text-shadow: 0 0 6px var(--red); }
+    }
 
     /* Disco ball */
     .disco-wrap { position:absolute; top:6%; right:5%; z-index:2; display:flex; flex-direction:column; align-items:center; }
@@ -175,6 +192,7 @@
       font-size:clamp(.55rem,2.5vw,.8rem);
       letter-spacing:.35em; color:var(--turquoise);
       text-shadow:var(--gt); text-transform:uppercase; opacity:0;
+      margin-bottom: clamp(1rem, 4vw, 2rem);
     }
     .hero-xv {
       font-family:'Bebas Neue',sans-serif;
@@ -304,55 +322,111 @@
       animation:blink 1.1s ease-in-out infinite;
     }
 
-    /* ===== GALLERY ===== */
-    #gallery { padding:clamp(3rem,8vw,6rem) 0; background:var(--bg); }
-    .gallery-header { padding:0 clamp(1.25rem,5vw,3rem); }
-    .gallery-track {
-      display:flex; gap:1rem;
-      overflow-x:auto; scroll-snap-type:x mandatory;
-      -webkit-overflow-scrolling:touch;
-      padding:0 clamp(1.25rem,5vw,3rem) 1.5rem;
-      scrollbar-width:none;
+    /* ===== HISTORIA ===== */
+    #historia { background:var(--bg); overflow:hidden; }
+
+    .historia-header {
+      padding:clamp(3.5rem,8vw,5rem) clamp(1.25rem,5vw,3rem) clamp(2rem,5vw,3rem);
+      text-align:center;
     }
-    .gallery-track::-webkit-scrollbar { display:none; }
-    .gallery-item {
-      flex:0 0 min(75vw,290px); scroll-snap-align:center;
-      position:relative; border-radius:12px; overflow:hidden;
-      border:1px solid var(--fuchsia);
-      box-shadow: 0 0 10px rgba(255,45,149,.25);
-      animation:rainbow-border 6s linear infinite;
-      will-change:transform;
+    .historia-eyebrow {
+      font-family:'Orbitron',sans-serif;
+      font-size:clamp(.5rem,1.8vw,.65rem); letter-spacing:.4em;
+      color:rgba(255,255,255,.3); text-transform:uppercase; margin-bottom:.75rem;
     }
-    .gallery-item:nth-child(2) { animation-delay:-2s; }
-    .gallery-item:nth-child(3) { animation-delay:-4s; }
-    .gallery-item:nth-child(4) { animation-delay:-1s; }
-    .gallery-item:nth-child(5) { animation-delay:-3s; }
-    .gallery-item:nth-child(6) { animation-delay:-5s; }
-    .gallery-item:nth-child(7) { animation-delay:-1.5s; }
-    .gallery-item img {
-      width:100%; height:300px;
+
+    .chapter {
+      position:relative; min-height:100svh;
+      display:flex; flex-direction:column; overflow:hidden;
+    }
+
+    /* thin neon line at top of each chapter */
+    .chapter::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:1px;
+      z-index:3; pointer-events:none;
+    }
+    .chapter.cf::before { background:linear-gradient(90deg,transparent,var(--fuchsia),transparent); }
+    .chapter.ct::before { background:linear-gradient(90deg,transparent,var(--turquoise),transparent); }
+    .chapter.cy::before { background:linear-gradient(90deg,transparent,var(--yellow),transparent); }
+    .chapter.cp::before { background:linear-gradient(90deg,transparent,var(--purple),transparent); }
+
+    .chapter-photo {
+      position:absolute; inset:0; z-index:0; overflow:hidden;
+    }
+    .chapter-photo img {
+      width:100%; height:100%;
       object-fit:cover; object-position:top center;
-      transition:transform .45s ease;
     }
-    .gallery-item:hover img { transform:scale(1.05); }
-    .gallery-caption {
-      position:absolute; bottom:0; left:0; right:0;
-      padding:2.5rem 1rem 1rem;
-      background:linear-gradient(to top,rgba(0,0,0,.9),transparent);
-      font-size:.75rem; color:rgba(255,255,255,.9);
-      letter-spacing:.05em; text-align:center;
+
+    /* bottom-to-top gradient overlay (mobile) */
+    .chapter::after {
+      content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
+      background:linear-gradient(
+        to top,
+        rgba(0,0,0,.95) 0%,
+        rgba(0,0,0,.55) 42%,
+        rgba(0,0,0,.06) 100%
+      );
     }
-    @media (min-width:640px) {
-      .gallery-track {
-        display:grid; grid-template-columns:repeat(3,1fr);
-        overflow-x:visible; scroll-snap-type:none;
-        padding:0 clamp(1.25rem,5vw,3rem);
+
+    .chapter-content {
+      position:relative; z-index:2;
+      margin-top:auto;
+      padding:clamp(2rem,6vw,3.5rem) clamp(1.25rem,5vw,3rem) clamp(2rem,6vw,3rem);
+    }
+
+    .chapter-num {
+      display:block; font-family:'Orbitron',sans-serif; font-weight:900;
+      font-size:clamp(5rem,20vw,11rem); line-height:.85;
+      letter-spacing:-.02em; margin-bottom:-.2em; opacity:.12;
+    }
+    .chapter.cf .chapter-num { color:var(--fuchsia); }
+    .chapter.ct .chapter-num { color:var(--turquoise); }
+    .chapter.cy .chapter-num { color:var(--yellow); }
+    .chapter.cp .chapter-num { color:var(--purple); }
+
+    .chapter-title {
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(2.5rem,9vw,4.5rem);
+      letter-spacing:.06em; line-height:1; color:var(--white);
+    }
+    .chapter.cf .chapter-title { text-shadow:0 0 18px rgba(255,45,149,.6); }
+    .chapter.ct .chapter-title { text-shadow:0 0 18px rgba(0,240,255,.6); }
+    .chapter.cy .chapter-title { text-shadow:0 0 18px rgba(252,238,9,.6); }
+    .chapter.cp .chapter-title { text-shadow:0 0 18px rgba(125,44,255,.6); }
+
+    .chapter-text {
+      font-family:'Dancing Script',cursive;
+      font-size:clamp(1.1rem,4.5vw,1.5rem);
+      color:rgba(255,255,255,.8); line-height:1.6; margin-top:.5rem;
+    }
+
+    /* Desktop: alternating layout ───────── */
+    @media (min-width:768px) {
+      .chapter {
+        flex-direction:row; min-height:88vh;
       }
-      .gallery-item { flex:none; }
-    }
-    @media (min-width:1024px) {
-      .gallery-track { grid-template-columns:repeat(4,1fr); }
-      .gallery-item img { height:320px; }
+      .chapter-photo {
+        position:relative; inset:auto; z-index:auto;
+        width:50%; flex-shrink:0;
+      }
+      .chapter-photo img { height:88vh; }
+      .chapter::after { display:none; }
+      .chapter-content {
+        width:50%; margin-top:0;
+        display:flex; flex-direction:column; justify-content:center;
+        padding:4rem clamp(2rem,5vw,4rem);
+        background:linear-gradient(135deg,rgba(0,0,0,0),rgba(13,0,30,.65));
+      }
+      /* default: photo left, text right */
+      .chapter .chapter-photo  { order:1; }
+      .chapter .chapter-content { order:2; }
+      /* reversed: text left, photo right */
+      .chapter.reverse .chapter-photo  { order:2; }
+      .chapter.reverse .chapter-content { order:1; }
+
+      .chapter-num { opacity:.07; }
+      .chapter-title { text-shadow:none !important; }
     }
 
     /* ===== DETAILS ===== */
@@ -595,39 +669,87 @@
 
   <div class="neon-divider"></div>
 
-  <!-- ========== GALLERY ========== -->
-  <section id="gallery">
-    <div class="gallery-header">
-      <h2 class="section-title fc glitch">De niña a quinceañera</h2>
+  <!-- ========== HISTORIA ========== -->
+  <section id="historia">
+    <div class="historia-header">
+      <p class="historia-eyebrow">15 años · 7 momentos</p>
+      <h2 class="section-title fc glitch">Su historia</h2>
     </div>
-    <div class="gallery-track" role="list">
-      <div class="gallery-item" role="listitem">
-        <img src="img/mariana-nina-lavanda-auto-popcorn.jpeg" alt="Mariana de niña sonriendo en auto, outfit lavanda con popcorn" loading="lazy">
-        <div class="gallery-caption">Sonrisas y popcorn 🍿</div>
+
+    <div class="chapter cf">
+      <div class="chapter-photo">
+        <img src="img/mariana-nina-lavanda-auto-popcorn.jpeg" alt="Mariana de niña sonriendo en el auto con outfit lavanda" loading="lazy">
       </div>
-      <div class="gallery-item" role="listitem">
+      <div class="chapter-content">
+        <span class="chapter-num" aria-hidden="true">01</span>
+        <h3 class="chapter-title">El comienzo</h3>
+        <p class="chapter-text">Desde el primer día, tenía la sonrisa más brillante del lugar.</p>
+      </div>
+    </div>
+
+    <div class="chapter ct reverse">
+      <div class="chapter-photo">
         <img src="img/mariana-nina-chaqueta-rosa-auto.jpeg" alt="Mariana niña con chaqueta rosa fucsia en el auto" loading="lazy">
-        <div class="gallery-caption">Rosa y mucho estilo 💕</div>
       </div>
-      <div class="gallery-item" role="listitem">
+      <div class="chapter-content">
+        <span class="chapter-num" aria-hidden="true">02</span>
+        <h3 class="chapter-title">Su primer look</h3>
+        <p class="chapter-text">El rosado siempre fue su favorito. Sin negociación.</p>
+      </div>
+    </div>
+
+    <div class="chapter cy">
+      <div class="chapter-photo">
         <img src="img/mariana-nina-uniforme-escolar-puerta.jpeg" alt="Mariana en uniforme escolar azul con mochila rosa" loading="lazy">
-        <div class="gallery-caption">Primera estudiante ✏️</div>
       </div>
-      <div class="gallery-item" role="listitem">
+      <div class="chapter-content">
+        <span class="chapter-num" aria-hidden="true">03</span>
+        <h3 class="chapter-title">La estudiante</h3>
+        <p class="chapter-text">Lista para aprender. Lista para sorprender.</p>
+      </div>
+    </div>
+
+    <div class="chapter cp reverse">
+      <div class="chapter-photo">
         <img src="img/mariana-nina-abrigo-rojo-leopardo-sofa.jpeg" alt="Mariana niña con abrigo rojo y leggings leopardo en sofá" loading="lazy">
-        <div class="gallery-caption">Fashion desde siempre 🐆</div>
       </div>
-      <div class="gallery-item" role="listitem">
+      <div class="chapter-content">
+        <span class="chapter-num" aria-hidden="true">04</span>
+        <h3 class="chapter-title">La fashionista</h3>
+        <p class="chapter-text">El estilo no se improvisa. Ella lo nació.</p>
+      </div>
+    </div>
+
+    <div class="chapter cf">
+      <div class="chapter-photo">
         <img src="img/mariana-selfie-gafas-polo-blanco.jpeg" alt="Selfie de Mariana con gafas y polo blanco" loading="lazy">
-        <div class="gallery-caption">Selfie queen 😎</div>
       </div>
-      <div class="gallery-item" role="listitem">
-        <img src="img/mariana-selfie-gorra-scrunchie-rosa.jpeg" alt="Selfie de Mariana con gorra y scrunchie rosa" loading="lazy">
-        <div class="gallery-caption">Vibra total ✨</div>
+      <div class="chapter-content">
+        <span class="chapter-num" aria-hidden="true">05</span>
+        <h3 class="chapter-title">Su propia voz</h3>
+        <p class="chapter-text">Ya sabía exactamente quién quería ser.</p>
       </div>
-      <div class="gallery-item" role="listitem">
-        <img src="img/mariana-joven-selfie-paleta-signo-paz.jpeg" alt="Mariana con camisa a cuadros y signo de paz" loading="lazy">
-        <div class="gallery-caption">Peace &amp; love ✌️</div>
+    </div>
+
+    <div class="chapter ct reverse">
+      <div class="chapter-photo">
+        <img src="img/mariana-selfie-gorra-scrunchie-rosa.jpeg" alt="Selfie de Mariana con gorra gris y scrunchie rosa" loading="lazy">
+      </div>
+      <div class="chapter-content">
+        <span class="chapter-num" aria-hidden="true">06</span>
+        <h3 class="chapter-title">La joven</h3>
+        <p class="chapter-text">Segura. Auténtica. Imparable.</p>
+      </div>
+    </div>
+
+    <div class="chapter cy">
+      <div class="chapter-photo">
+        <img src="img/mariana-joven-selfie-paleta-signo-paz.jpeg" alt="Mariana con signo de paz y paleta" loading="lazy">
+      </div>
+      <div class="chapter-content">
+        <span class="chapter-num" aria-hidden="true">07</span>
+        <h3 class="chapter-title">La quinceañera</h3>
+        <p class="chapter-text">Esta noche, todos van a conocer a la Mariana de siempre.</p>
       </div>
     </div>
   </section>
@@ -941,20 +1063,38 @@
     setInterval(tick, 1000);
   })();
 
-  /* ─── GALLERY ───────────────────────────── */
-  gsap.from('.gallery-header .section-title', { opacity:0, y:35, duration:.85,
-    scrollTrigger: { trigger:'#gallery', start:'top 80%', once:true } });
+  /* ─── HISTORIA ──────────────────────────── */
+  gsap.from('.historia-eyebrow', { opacity:0, y:12, duration:.7,
+    scrollTrigger: { trigger:'#historia', start:'top 82%', once:true } });
+  gsap.from('.historia-header .section-title', { opacity:0, y:30, duration:.85, delay:.1,
+    scrollTrigger: { trigger:'#historia', start:'top 82%', once:true } });
 
-  if (!IS_MOBILE) {
-    document.querySelectorAll('.gallery-item').forEach((item, i) => {
-      gsap.set(item, { clipPath:'inset(0 0 100% 0)' });
-      gsap.to(item, {
-        clipPath: 'inset(0 0 0% 0)',
-        duration: .9, ease: 'power3.out',
-        scrollTrigger: { trigger:item, start:'top 88%', once:true }
-      });
+  document.querySelectorAll('.chapter').forEach((chapter) => {
+    const photo = chapter.querySelector('.chapter-photo');
+    const img   = chapter.querySelector('.chapter-photo img');
+    const num   = chapter.querySelector('.chapter-num');
+    const title = chapter.querySelector('.chapter-title');
+    const text  = chapter.querySelector('.chapter-text');
+
+    gsap.set(photo, { clipPath:'inset(100% 0 0 0)' });
+    gsap.to(photo, {
+      clipPath:'inset(0% 0 0 0)',
+      duration:1.1, ease:'power3.out',
+      scrollTrigger:{ trigger:chapter, start:'top 85%', once:true }
     });
-  }
+
+    if (!IS_MOBILE) {
+      gsap.to(img, {
+        yPercent:-8, ease:'none',
+        scrollTrigger:{ trigger:chapter, start:'top bottom', end:'bottom top', scrub:1.5 }
+      });
+    }
+
+    gsap.from([num, title, text], {
+      opacity:0, y:22, stagger:.1, duration:.72, delay:.35,
+      scrollTrigger:{ trigger:chapter, start:'top 78%', once:true }
+    });
+  });
 
   /* ─── DETAILS ───────────────────────────── */
   gsap.from('#details .section-title', { opacity:0, y:30, duration:.8,
