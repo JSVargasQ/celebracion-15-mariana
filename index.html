@@ -89,6 +89,88 @@
 
     /* ===== SHARED ===== */
     section { position: relative; overflow: hidden; }
+    /* ===== MUSIC PLAYER ===== */
+    .music-player {
+      position:fixed; bottom:1.5rem; right:1.25rem; z-index:990;
+      display:flex; flex-direction:column; align-items:center; gap:.4rem;
+    }
+    .music-btn {
+      position:relative; width:48px; height:48px; border-radius:50%;
+      border:1.5px solid rgba(255,45,149,.45);
+      background:rgba(13,0,30,.82);
+      backdrop-filter:blur(12px) saturate(1.6);
+      color:var(--fuchsia); cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      -webkit-tap-highlight-color:transparent;
+      transition:border-color .3s, box-shadow .3s, transform .2s;
+      box-shadow:0 4px 16px rgba(0,0,0,.45);
+      overflow:hidden;
+    }
+    .music-btn:hover {
+      border-color:rgba(255,45,149,.9);
+      box-shadow:0 4px 20px rgba(255,45,149,.35);
+      transform:scale(1.08);
+    }
+    .music-btn:active { transform:scale(.94); }
+    .music-btn.wants-play {
+      border-color:rgba(255,45,149,.65);
+      animation:music-wants-play 2s ease-in-out infinite;
+    }
+    @keyframes music-wants-play {
+      0%,100% { box-shadow:0 0 0 0 rgba(255,45,149,0); }
+      50%      { box-shadow:0 0 0 6px rgba(255,45,149,.22); }
+    }
+    .music-btn.is-playing {
+      border-color:var(--fuchsia);
+      animation:music-glow-pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes music-glow-pulse {
+      0%,100% { box-shadow:0 0 12px rgba(255,45,149,.45),0 0 28px rgba(255,45,149,.15),0 4px 16px rgba(0,0,0,.4); }
+      50%      { box-shadow:0 0 20px rgba(255,45,149,.75),0 0 42px rgba(255,45,149,.3),0 4px 16px rgba(0,0,0,.4); }
+    }
+    .music-btn__icon { position:absolute; transition:opacity .25s, transform .25s; }
+    .music-btn__icon--note  { opacity:1; transform:scale(1); }
+    .music-btn__icon--pause { opacity:0; transform:scale(.7); }
+    .music-btn.is-playing .music-btn__icon--note  { opacity:0; transform:scale(.7); }
+    .music-btn.is-playing .music-btn__icon--pause { opacity:1; transform:scale(1); }
+    .music-btn__waves {
+      position:absolute; inset:0; border-radius:50%;
+      pointer-events:none; display:flex; align-items:center; justify-content:center;
+      opacity:0; transition:opacity .3s;
+    }
+    .music-btn.is-playing .music-btn__waves { opacity:1; }
+    .music-btn__waves span {
+      position:absolute; border-radius:50%;
+      border:1.5px solid rgba(255,45,149,.5);
+      width:52px; height:52px;
+      animation:music-wave 2s ease-out infinite; opacity:0;
+    }
+    .music-btn__waves span:nth-child(1) { animation-delay:0s; }
+    .music-btn__waves span:nth-child(2) { animation-delay:.65s; }
+    .music-btn__waves span:nth-child(3) { animation-delay:1.3s; }
+    @keyframes music-wave {
+      0%   { transform:scale(1);   opacity:.65; }
+      100% { transform:scale(2.3); opacity:0; }
+    }
+    .music-btn__tooltip {
+      font-family:'Orbitron',sans-serif; font-size:.58rem;
+      letter-spacing:.18em; text-transform:uppercase;
+      color:var(--fuchsia); opacity:.55;
+      user-select:none; pointer-events:none;
+    }
+    #music-toast {
+      position:fixed; bottom:5.5rem; right:1.25rem;
+      background:rgba(13,0,30,.92);
+      border:1px solid rgba(255,45,149,.4);
+      border-radius:2rem; padding:.55rem 1.1rem;
+      font-family:'Lato',sans-serif; font-size:.8rem; color:var(--fuchsia);
+      backdrop-filter:blur(8px); z-index:989;
+      opacity:0; transform:translateY(8px);
+      transition:opacity .35s, transform .35s;
+      pointer-events:none; white-space:nowrap;
+    }
+    #music-toast.music-toast--visible { opacity:1; transform:translateY(0); }
+
     #quote, #date, #historia, #details, #dresscode, #family, #closing {
       contain: layout style;
     }
@@ -599,6 +681,25 @@
   </style>
 </head>
 <body>
+
+  <!-- ========== MUSIC PLAYER ========== -->
+  <div class="music-player" id="music-player">
+    <audio id="bg-music" loop preload="none">
+      <source src="olivia-newton-john-john-travolta-grease_ItliSfI3.mp3" type="audio/mpeg" />
+    </audio>
+    <button class="music-btn" id="music-toggle" aria-label="Reproducir música de fondo" aria-pressed="false">
+      <svg class="music-btn__icon music-btn__icon--note" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" fill="currentColor"/>
+      </svg>
+      <svg class="music-btn__icon music-btn__icon--pause" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="currentColor"/>
+      </svg>
+      <span class="music-btn__waves" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </span>
+    </button>
+    <span class="music-btn__tooltip" aria-hidden="true">Música</span>
+  </div>
 
   <div class="scroll-progress" aria-hidden="true"></div>
 
@@ -1190,6 +1291,92 @@
   /* ─── FAMILY PRESENTS LINE ──────────────── */
   gsap.from('.family-presents', { opacity:0, scaleX:.5, duration:.7, delay:.3, ease:'power2.out',
     scrollTrigger: { trigger:'#family', start:'top 75%', once:true } });
+
+  /* ─── MUSIC PLAYER ──────────────────────── */
+  (function() {
+    const audio = document.getElementById('bg-music');
+    const btn   = document.getElementById('music-toggle');
+    if (!audio || !btn) return;
+
+    audio.volume = 0;
+    const PREF_KEY   = 'mariana-music-pref';
+    const userPaused = sessionStorage.getItem(PREF_KEY) === 'off';
+
+    function setPlaying(playing) {
+      btn.classList.toggle('is-playing', playing);
+      btn.classList.remove('wants-play');
+      btn.setAttribute('aria-pressed', String(playing));
+      btn.setAttribute('aria-label',
+        playing ? 'Pausar música de fondo' : 'Reproducir música de fondo');
+    }
+
+    function fadeVolume(audioEl, from, to, durationMs, onDone) {
+      audioEl.volume = from;
+      const steps = 40, stepTime = durationMs / steps, delta = (to - from) / steps;
+      let current = from;
+      const timer = setInterval(() => {
+        current = Math.min(Math.max(current + delta, 0), 1);
+        audioEl.volume = parseFloat(current.toFixed(3));
+        if ((delta > 0 && current >= to) || (delta < 0 && current <= to)) {
+          clearInterval(timer);
+          if (onDone) onDone();
+        }
+      }, stepTime);
+    }
+
+    function play() {
+      audio.play()
+        .then(() => {
+          setPlaying(true);
+          fadeVolume(audio, 0, 0.35, 1400);
+          sessionStorage.removeItem(PREF_KEY);
+        })
+        .catch(() => {
+          setPlaying(false);
+          if (!userPaused) scheduleAutoplay();
+        });
+    }
+
+    function pause() {
+      fadeVolume(audio, audio.volume, 0, 600, () => { audio.pause(); audio.volume = 0; });
+      setPlaying(false);
+      sessionStorage.setItem(PREF_KEY, 'off');
+    }
+
+    function scheduleAutoplay() {
+      btn.classList.add('wants-play');
+      const events = ['scroll', 'touchstart', 'click', 'keydown'];
+      function onFirst() {
+        events.forEach(e => window.removeEventListener(e, onFirst));
+        if (audio.paused && !userPaused) play();
+      }
+      events.forEach(e => window.addEventListener(e, onFirst, { once:true, passive:true }));
+    }
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (audio.paused) play(); else pause();
+    });
+
+    if (!userPaused) play();
+
+    setTimeout(() => {
+      if (audio.paused && !userPaused && btn.classList.contains('wants-play')) {
+        const existing = document.getElementById('music-toast');
+        if (existing) return;
+        const toast = document.createElement('div');
+        toast.id = 'music-toast';
+        toast.setAttribute('role', 'status');
+        toast.innerHTML = '♪ Toca para activar la música';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.classList.add('music-toast--visible'), 50);
+        setTimeout(() => {
+          toast.classList.remove('music-toast--visible');
+          setTimeout(() => toast.remove(), 400);
+        }, 4000);
+      }
+    }, 4000);
+  })();
   </script>
 </body>
 </html>
