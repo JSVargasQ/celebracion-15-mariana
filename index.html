@@ -818,7 +818,7 @@
 
     <div class="chapter cp reverse">
       <div class="chapter-photo">
-        <img src="img/mariana-nina-abrigo-rojo-leopardo-sofa.jpeg" alt="Mariana niña con abrigo rojo y leggings leopardo en sofá" loading="lazy">
+        <img src="img/mariana-nina-abrigo-rojo-leopardo-sofa.jpeg" alt="Mariana niña con abrigo rojo y leggings leopardo en sofá" loading="lazy" style="object-position:right center">
       </div>
       <div class="chapter-content">
         <span class="chapter-num" aria-hidden="true">04</span>
@@ -1299,8 +1299,6 @@
     if (!audio || !btn) return;
 
     audio.volume = 0;
-    const PREF_KEY   = 'mariana-music-pref';
-    const userPaused = sessionStorage.getItem(PREF_KEY) === 'off';
 
     function setPlaying(playing) {
       btn.classList.toggle('is-playing', playing);
@@ -1329,18 +1327,17 @@
         .then(() => {
           setPlaying(true);
           fadeVolume(audio, 0, 0.35, 1400);
-          sessionStorage.removeItem(PREF_KEY);
         })
         .catch(() => {
+          /* Navegador bloqueó autoplay — espera primer gesto */
           setPlaying(false);
-          if (!userPaused) scheduleAutoplay();
+          scheduleAutoplay();
         });
     }
 
     function pause() {
       fadeVolume(audio, audio.volume, 0, 600, () => { audio.pause(); audio.volume = 0; });
       setPlaying(false);
-      sessionStorage.setItem(PREF_KEY, 'off');
     }
 
     function scheduleAutoplay() {
@@ -1348,7 +1345,7 @@
       const events = ['scroll', 'touchstart', 'click', 'keydown'];
       function onFirst() {
         events.forEach(e => window.removeEventListener(e, onFirst));
-        if (audio.paused && !userPaused) play();
+        if (audio.paused) play();
       }
       events.forEach(e => window.addEventListener(e, onFirst, { once:true, passive:true }));
     }
@@ -1358,10 +1355,11 @@
       if (audio.paused) play(); else pause();
     });
 
-    if (!userPaused) play();
+    /* Siempre inicia en carga */
+    play();
 
     setTimeout(() => {
-      if (audio.paused && !userPaused && btn.classList.contains('wants-play')) {
+      if (audio.paused && btn.classList.contains('wants-play')) {
         const existing = document.getElementById('music-toast');
         if (existing) return;
         const toast = document.createElement('div');
