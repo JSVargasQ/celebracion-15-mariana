@@ -1322,12 +1322,13 @@
 
     function scheduleAutoplay() {
       btn.classList.add('wants-play');
-      const events = ['scroll', 'touchstart', 'click', 'keydown'];
-      function onFirst() {
-        events.forEach(e => window.removeEventListener(e, onFirst));
+      function onScroll() {
+        window.removeEventListener('scroll',     onScroll, { passive:true });
+        window.removeEventListener('touchstart', onScroll, { passive:true });
         if (audio.paused) play();
       }
-      events.forEach(e => window.addEventListener(e, onFirst, { once:true, passive:true }));
+      window.addEventListener('scroll',     onScroll, { once:true, passive:true });
+      window.addEventListener('touchstart', onScroll, { once:true, passive:true });
     }
 
     btn.addEventListener('click', (e) => {
@@ -1335,25 +1336,10 @@
       if (audio.paused) play(); else pause();
     });
 
-    /* Siempre inicia en carga */
-    play();
-
-    setTimeout(() => {
-      if (audio.paused && btn.classList.contains('wants-play')) {
-        const existing = document.getElementById('music-toast');
-        if (existing) return;
-        const toast = document.createElement('div');
-        toast.id = 'music-toast';
-        toast.setAttribute('role', 'status');
-        toast.innerHTML = '♪ Toca para activar la música';
-        document.body.appendChild(toast);
-        setTimeout(() => toast.classList.add('music-toast--visible'), 50);
-        setTimeout(() => {
-          toast.classList.remove('music-toast--visible');
-          setTimeout(() => toast.remove(), 400);
-        }, 4000);
-      }
-    }, 4000);
+    /* Intenta autoplay directo; si el browser lo bloquea, arranca con el primer scroll */
+    audio.play()
+      .then(() => { setPlaying(true); fadeVolume(audio, 0, 0.35, 1400); })
+      .catch(() => scheduleAutoplay());
   })();
   </script>
 </body>
