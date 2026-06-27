@@ -535,6 +535,25 @@
     }
     .detail-card:nth-child(2) { animation-delay:-1.65s; }
     .detail-card:nth-child(3) { animation-delay:-3.3s; }
+    .lluvia-note {
+      display:flex; align-items:center; gap:1rem;
+      margin-top:2rem; padding:1rem 1.5rem;
+      border:1px solid rgba(255,45,149,.4); border-radius:12px;
+      background:rgba(255,45,149,.06);
+      box-shadow:0 0 24px rgba(255,45,149,.08);
+      max-width:700px; width:100%;
+      animation:rainbow-border 6s linear infinite;
+    }
+    .lluvia-note svg { flex-shrink:0; }
+    .lluvia-note-title {
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(1.2rem,4vw,1.6rem);
+      color:var(--fuchsia); letter-spacing:.06em; line-height:1;
+    }
+    .lluvia-note-sub {
+      font-size:.82rem; color:rgba(255,255,255,.6);
+      margin-top:.3rem; line-height:1.5;
+    }
     .detail-svg {
       width:2.4rem; height:2.4rem; flex-shrink:0;
       animation:float 4s ease-in-out infinite;
@@ -887,6 +906,17 @@
           <p>Conjunto Residencial<br>Puerta del Sol<br><small>Calle 10 Sur # 11-18</small></p>
           <a href="https://maps.app.goo.gl/d6KBiCLyy8Z3CcH5A" target="_blank" rel="noopener noreferrer">Ver en Google Maps →</a>
         </div>
+      </div>
+    </div>
+
+    <div class="lluvia-note">
+      <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#FF2D95" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 5px #FF2D95)" aria-hidden="true">
+        <rect x="2" y="5" width="20" height="14" rx="2"/>
+        <polyline points="2,5 12,13 22,5"/>
+      </svg>
+      <div>
+        <div class="lluvia-note-title">Lluvia de sobres</div>
+        <p class="lluvia-note-sub">La fiesta es con lluvia de sobres —<br>tu cariño es el mejor regalo para Mariana.</p>
       </div>
     </div>
   </section>
