@@ -658,18 +658,6 @@
       font-size:clamp(1.1rem,4vw,1.35rem);
       color:rgba(255,255,255,.65); line-height:1.6; font-style:italic;
     }
-    .wa-btn {
-      display:inline-flex; align-items:center; gap:.75rem;
-      background:rgba(37,211,102,.12); border:2px solid #25D366;
-      color:#25D366; border-radius:50px;
-      padding:.9rem 2rem;
-      font-family:'Orbitron',sans-serif; font-size:.72rem; letter-spacing:.1em;
-      text-decoration:none; transition:all .3s ease;
-      box-shadow:0 0 20px rgba(37,211,102,.18);
-    }
-    .wa-btn:hover { background:rgba(37,211,102,.25); box-shadow:0 0 40px rgba(37,211,102,.4); transform:translateY(-3px); }
-    .wa-icon { font-size:1.4rem; }
-
     /* ===== FOOTER ===== */
     footer {
       padding:2rem; text-align:center;
@@ -990,13 +978,6 @@
       </h2>
       <p class="closing-sub">porque esta noche nadie se queda sentado</p>
 
-      <!-- TODO: reemplazar el número de WhatsApp antes de compartir -->
-      <a href="https://wa.me/573000000000?text=%C2%A1Confirmo+mi+asistencia+a+los+XV+de+Mariana!+%F0%9F%8E%89"
-         class="wa-btn" target="_blank" rel="noopener noreferrer"
-         aria-label="Confirmar asistencia por WhatsApp">
-        <span class="wa-icon">💬</span>
-        CONFIRMAR ASISTENCIA
-      </a>
     </div>
   </section>
 
@@ -1286,7 +1267,6 @@
   gsap.from('.cassette-wrap',  { opacity:0, scale:.65, duration:.9, ease:'back.out(1.6)', scrollTrigger:closingTrig });
   gsap.from('.closing-title',  { opacity:0, y:35, duration:.9, delay:.2, scrollTrigger:closingTrig });
   gsap.from('.closing-sub',    { opacity:0, y:20, duration:.7, delay:.45, scrollTrigger:closingTrig });
-  gsap.from('.wa-btn',         { opacity:0, y:20, scale:.95, duration:.8, delay:.65, scrollTrigger:closingTrig });
 
   /* ─── FAMILY PRESENTS LINE ──────────────── */
   gsap.from('.family-presents', { opacity:0, scaleX:.5, duration:.7, delay:.3, ease:'power2.out',
