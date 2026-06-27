@@ -89,7 +89,7 @@
 
     /* ===== SHARED ===== */
     section { position: relative; overflow: hidden; }
-    #quote, #date, #gallery, #details, #dresscode, #family, #closing {
+    #quote, #date, #historia, #details, #dresscode, #family, #closing {
       contain: layout style;
     }
 
@@ -148,16 +148,22 @@
     @media (max-width:639px) {
       .light-spot { display:none; }
 
-      /* En mobile el blur de 45px "derrite" el texto — reducimos a máx 12px */
+      /* neon-pulse anima opacity de forma continua → capa GPU permanente → texto borroso */
+      .hero-xv  { animation: none !important; }
+      .hero-anos { animation: none !important; }
+
+      /* Una sola capa mínima — el color neón ya carga todo el peso visual */
       :root {
-        --gf: 0 0 4px #FF2D95, 0 0 12px #FF2D95;
-        --gt: 0 0 4px #00F0FF, 0 0 12px #00F0FF;
-        --gy: 0 0 4px #FCEE09, 0 0 12px #FCEE09;
-        --gp: 0 0 4px #7D2CFF, 0 0 12px #7D2CFF;
+        --gf: 0 0 3px #FF2D95;
+        --gt: 0 0 3px #00F0FF;
+        --gy: 0 0 3px #FCEE09;
+        --gp: 0 0 3px #7D2CFF;
       }
-      /* Dresscode Sí/No también tiene blur hardcodeado */
-      .dc-col.yes h3 { text-shadow: 0 0 6px #00F0FF; }
-      .dc-col.no  h3 { text-shadow: 0 0 6px var(--red); }
+      /* Títulos de sección y closing: sin text-shadow en mobile */
+      .section-title { text-shadow: none !important; }
+      .closing-title { text-shadow: none !important; }
+      .dc-col.yes h3 { text-shadow: none; }
+      .dc-col.no  h3 { text-shadow: none; }
     }
 
     /* Disco ball */
